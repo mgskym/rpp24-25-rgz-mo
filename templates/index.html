@@ -1,0 +1,13 @@
+{% extends "blueprint.html" %}
+
+{% block main %}
+    <header>
+        <nav>
+            <a href="/logout">Выход</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Список операций</h1>
+        {{ operations }}
+    </main>
+{% endblock %}
