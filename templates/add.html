@@ -1,5 +1,20 @@
 {% extends "blueprint.html" %}
 
 {% block main %}
-
+    <header>
+    <nav>
+        <a href="/logout">Выход</a>
+    </nav>
+    </header>
+    <main>
+        <div style="margin-top: 24px;"><a href="/list">Назад к списку операций</a></div>
+        <h1>Добавление операции</h1>
+        <form method="POST">
+            <input type="number" name="amount" placeholder="Сумма">
+            <input type="text" name="category" placeholder="Категория расходов">
+            <input type="text" name="description" placeholder="Описание">
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <div style="color: red; margin-top: 24px;">{{ errors }}</div>
+    </main>
 {% endblock %}

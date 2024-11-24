@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from db import db
 from db.models import users, operations, actions
 from flask_login import login_user, login_required, current_user, logout_user
-import time
+
 
 app = Flask(__name__)
 
@@ -120,22 +120,27 @@ def logout():
     logout_user()
     return redirect("/login")
 
+@app.route("/add", methods=['GET'])
+@login_required
+def operations_adding_page():
+    return render_template(
+        "add.html"
+    )
+
 
 @app.route("/add", methods=['POST'])
-# @login_required
+@login_required
 def operations_adding():
-    user_id_form = request.args['user_id']
-    amount_form = request.args['amount']
-    category_form = request.args['category']
-    description_form = request.args['description']
-    created_at_form = request.args['created_at']
+    amount_form = request.form.get('amount')
+    category_form = request.form.get('category')
+    description_form = request.form.get('description')
 
     newOperation = operations(
-                user_id = user_id_form,
+                user_id = current_user.id,
                 amount = amount_form,
                 category = category_form,
                 description = description_form,
-                created_at = created_at_form
+                created_at = current_date_sql()
             )
     db.session.add(newOperation)
     db.session.commit()
