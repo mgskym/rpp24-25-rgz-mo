@@ -121,6 +121,7 @@ def logout():
     logout_user()
     return redirect("/login")
 
+
 @app.route("/add", methods=['GET'])
 @login_required
 def operations_adding_page():
@@ -221,26 +222,35 @@ def edit_operation_post(id_edit):
         operation=operation
     )
     else:
-        operation = operations.query.filter_by(id=id_edit).first()
-        amount_form = request.form.get('amount')
-        category_form = request.form.get('category')
-        description_form = request.form.get('description')
-        
-        operation.amount = amount_form
-        operation.category = category_form
-        operation.description = description_form
-        db.session.commit()
+        if (amount_form != '' and category_form != ''):
+            operation = operations.query.filter_by(id=id_edit).first()
+            amount_form = request.form.get('amount')
+            category_form = request.form.get('category')
+            description_form = request.form.get('description')
 
-        newAction = actions(
-            operation_id = operation.id,
-            action_type = 'Редактирование',
-            date = current_datetime_sql()
-        )
-        db.session.add(newAction)
-        db.session.commit()
-        message = f'Изменения сохранены'
-        return render_template(
-            "edit.html",
-            operation=operation,
-            message=message
-        )
+            operation.amount = amount_form
+            operation.category = category_form
+            operation.description = description_form
+            db.session.commit()
+
+            newAction = actions(
+                operation_id = operation.id,
+                action_type = 'Редактирование',
+                date = current_datetime_sql()
+            )
+            db.session.add(newAction)
+            db.session.commit()
+            
+            message = f'Изменения сохранены'
+            return render_template(
+                "edit.html",
+                operation=operation,
+                message=message
+            )
+        else:
+            errors = f'Поля "Сумма" и "Категория" обязательны для заполнения'
+            return render_template(
+                "edit.html",
+                operation=operation,
+                errors=errors
+            )
