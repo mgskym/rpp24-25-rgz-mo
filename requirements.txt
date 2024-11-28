@@ -9,3 +9,4 @@ pytest
 requests
 bandit
 flake8
+python-dotenv
