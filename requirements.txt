@@ -7,3 +7,5 @@ Werkzeug==3.0.1
 psycopg2
 pytest
 requests
+bandit
+flake8
