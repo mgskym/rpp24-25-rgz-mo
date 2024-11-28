@@ -18,18 +18,17 @@ class operations(db.Model):
     amount = db.Column(db.Numeric, nullable=False)
     category = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(256))
-    created_at = db.Column(db.Date)
+    created_at = db.Column(db.DateTime)
 
     def __repr__(self):
-        return f"id:{self.id}, user_id:{self.user_id}, type:{self.type}, amount:{self.amount}, created_at:{self.created_at}"
+        return f"id:{self.id}, user_id:{self.user_id}, amount:{self.amount}, created_at:{self.created_at}"
 
 
-class actions(db.Model, UserMixin):
+class actions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    operation_id = db.Column(db.Integer, db.ForeignKey("operations.id"), nullable=False)
+    operation_id = db.Column(db.Integer, nullable=False)
     action_type = db.Column(db.String(20), nullable=False)
-    date = db.Column(db.Date)
+    date = db.Column(db.DateTime)
 
     def __repr__(self):
         return f"id:{self.id}, user_id:{self.user_id}, operation_id:{self.operation_id}, action_type:{self.action_type}, date:{self.date}"

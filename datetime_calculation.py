@@ -1,4 +1,6 @@
-def current_date_sql():
+from datetime import datetime
+
+def current_datetime_sql():
     current_datetime = datetime.now()
     if len(str(current_datetime.day)) == 1:
         day = f'0{current_datetime.day}'
@@ -23,5 +25,5 @@ def current_date_sql():
     else:
         second = current_datetime.second
 
-    date = f'{day}/{month}/{year} {hour}:{minute}:{second}'
-    return date
+    result = f'{day}/{month}/{year} {hour}:{minute}:{second}'
+    return result

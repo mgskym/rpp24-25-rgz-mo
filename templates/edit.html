@@ -1,0 +1,21 @@
+{% extends "blueprint.html" %}
+
+{% block main %}
+    <header>
+    <nav>
+        <a href="/logout">Выход</a>
+    </nav>
+    </header>
+    <main>
+        <div style="margin-top: 24px;"><a href="/list">Назад к списку операций</a></div>
+        <h1>Редактирование операции {{ operation.id }}</h1>
+        <form method="POST">
+            <input type="number" name="amount" placeholder="Сумма" value="{{ operation.amount }}">
+            <input type="text" name="category" placeholder="Категория расходов" value="{{ operation.category }}">
+            <input type="text" name="description" placeholder="Описание" value="{{ operation.description }}">
+            <button type="submit">Сохранить</button>
+        </form>
+        <div style="color: red; margin-top: 24px;">{{ errors }}</div>
+        <div style="color: green; margin-top: 24px;">{{ message }}</div>
+    </main>
+{% endblock %}

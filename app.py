@@ -5,7 +5,8 @@ from flask_login import LoginManager
 from db import db
 from db.models import users, operations, actions
 from flask_login import login_user, login_required, current_user, logout_user
-
+from datetime_calculation import current_datetime_sql
+import json
 
 app = Flask(__name__)
 
@@ -134,17 +135,37 @@ def operations_adding():
     amount_form = request.form.get('amount')
     category_form = request.form.get('category')
     description_form = request.form.get('description')
+    if (amount_form != '' and category_form != ''):
+        newOperation = operations(
+                    user_id = current_user.id,
+                    amount = amount_form,
+                    category = category_form,
+                    description = description_form,
+                    created_at = current_datetime_sql()
+                )
+        db.session.add(newOperation)
+        db.session.commit()
 
-    newOperation = operations(
-                user_id = current_user.id,
-                amount = amount_form,
-                category = category_form,
-                description = description_form,
-                created_at = current_date_sql()
-            )
-    db.session.add(newOperation)
-    db.session.commit()
-    return make_response(200, 'OK')
+        operation_id = (operations.query.filter_by(user_id=current_user.id, amount=amount_form, created_at=current_datetime_sql()).first()).id
+        newAction = actions(
+            operation_id = operation_id,
+            action_type = 'Добавление',
+            date = current_datetime_sql()
+        )
+        db.session.add(newAction)
+        db.session.commit()
+        
+        message = f'Операция на сумму {amount_form} руб. успешно добавлена'
+        return render_template(
+            "add.html",
+            message=message
+        )
+    else:
+        errors = f'Поля "Сумма" и "Категория" обязательны для заполнения'
+        return render_template(
+            "add.html",
+            errors=errors
+        )
 
 
 @app.route("/list", methods=['GET'])
@@ -155,3 +176,71 @@ def operations_list():
         'index.html',
         operations = user_operations
     )
+
+
+@app.route("/delete", methods=['POST'])
+@login_required
+def delete_operation():
+    operation_id = request.get_json(force=True)['id']
+    operation = operations.query.filter_by(id=operation_id).first()
+
+    newAction = actions(
+            operation_id = operation_id,
+            action_type = 'Удаление',
+            date = current_datetime_sql()
+        )
+    db.session.add(newAction)
+    db.session.commit()
+
+    db.session.delete(operation)
+    db.session.commit()
+    return make_response('OK')
+
+
+@app.route("/edit", methods = ['POST', 'GET'])
+@login_required
+def edit_redirect():
+    id_edit = request.form.get("selected_operation")
+    operations_all = operations.query.filter_by(user_id=current_user.id).all()
+    if request.method == 'GET':
+        return render_template(
+            '/edit_select.html',
+            operations = operations_all
+        )
+    else:
+        return redirect(f'/edit/{id_edit}')
+
+
+@app.route("/edit/<string:id_edit>", methods = ['POST', 'GET'])
+@login_required
+def edit_operation_post(id_edit):
+    operation = operations.query.filter_by(id=id_edit).first()
+    if request.method == 'GET':
+        return render_template(
+        "edit.html",
+        operation=operation
+    )
+    else:
+        operation = operations.query.filter_by(id=id_edit).first()
+        amount_form = request.form.get('amount')
+        category_form = request.form.get('category')
+        description_form = request.form.get('description')
+        
+        operation.amount = amount_form
+        operation.category = category_form
+        operation.description = description_form
+        db.session.commit()
+
+        newAction = actions(
+            operation_id = operation.id,
+            action_type = 'Редактирование',
+            date = current_datetime_sql()
+        )
+        db.session.add(newAction)
+        db.session.commit()
+        message = f'Изменения сохранены'
+        return render_template(
+            "edit.html",
+            operation=operation,
+            message=message
+        )

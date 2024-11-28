@@ -29,12 +29,9 @@ else:
 date = f'{day}/{month}/{year} {hour}:{minute}:{second}'
 print(date)
 
-a = requests.post('http://127.0.0.1:5000/add', json={
-    "user_id": 4,
-    "amount": 125.01,
-    "category": "Еда, питание",
-    "description": "Купил 3 шоколадных батончика",
-    "created_at": date
+a = requests.post('http://127.0.0.1:5000/delete', headers={'Content-Type': 'application/json'}, json={
+    "id": 4,
+    "name": 12
 })
 
 print(a)

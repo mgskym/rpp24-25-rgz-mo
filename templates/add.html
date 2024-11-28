@@ -13,8 +13,9 @@
             <input type="number" name="amount" placeholder="Сумма">
             <input type="text" name="category" placeholder="Категория расходов">
             <input type="text" name="description" placeholder="Описание">
-            <button type="submit">Зарегистрироваться</button>
+            <button type="submit">Добавить</button>
         </form>
         <div style="color: red; margin-top: 24px;">{{ errors }}</div>
+        <div style="color: green; margin-top: 24px;">{{ message }}</div>
     </main>
 {% endblock %}
