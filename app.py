@@ -7,15 +7,16 @@ from db.models import users, operations, actions
 from flask_login import login_user, login_required, current_user, logout_user
 from datetime_calculation import current_datetime_sql
 import json
+import os
 
 app = Flask(__name__)
 
-app.secret_key = '123'
-user_db = "postgres"
+app.secret_key = os.environ.get('APP_SECRET_KEY')
+user_db = os.environ.get('USER_DB')
 host_ip = "localhost"
 host_port = "5432"
-database_name = "rpp_rgz_2024"
-password = "postgres"
+database_name = os.environ.get('DATABASE_NAME')
+password = os.environ.get('PASSWORD')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{user_db}:{password}@{host_ip}:{host_port}/{database_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,7 +50,7 @@ def login_2():
     email_form = request.form.get('email')
     password_form = request.form.get('password')
     my_user = users.query.filter_by(email=email_form).first()
-    if (email_form != '' and password_form != ''):
+    if (email_form and password_form):
         if my_user:
             if check_password_hash(my_user.password, password_form):
                 login_user(my_user, remember=False)
@@ -90,7 +91,7 @@ def register_post():
 
     is_user_exists = users.query.filter_by(email=email_form).first()
 
-    if (username_form != '' and email_form != '' and password_form != ''):
+    if (username_form and email_form and password_form):
         if is_user_exists:
             errors = 'Пользователь с такими данными уже существует'
             return render_template(
@@ -136,7 +137,7 @@ def operations_adding():
     amount_form = request.form.get('amount')
     category_form = request.form.get('category')
     description_form = request.form.get('description')
-    if (amount_form != '' and category_form != ''):
+    if (amount_form and category_form):
         newOperation = operations(
                     user_id = current_user.id,
                     amount = amount_form,
@@ -222,7 +223,7 @@ def edit_operation_post(id_edit):
         operation=operation
     )
     else:
-        if (amount_form != '' and category_form != ''):
+        if (amount_form and category_form):
             operation = operations.query.filter_by(id=id_edit).first()
             amount_form = request.form.get('amount')
             category_form = request.form.get('category')
@@ -240,7 +241,7 @@ def edit_operation_post(id_edit):
             )
             db.session.add(newAction)
             db.session.commit()
-            
+
             message = f'Изменения сохранены'
             return render_template(
                 "edit.html",
