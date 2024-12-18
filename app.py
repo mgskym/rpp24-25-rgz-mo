@@ -39,14 +39,14 @@ def start():
 
 
 @app.route("/login", methods=['GET'])
-def login():
+def login_page():
     return render_template(
         'login.html'
     )
 
 
 @app.route("/login", methods=['POST'])
-def login_2():
+def login():
     email_form = request.form.get('email')
     password_form = request.form.get('password')
     my_user = users.query.filter_by(email=email_form).first()
@@ -76,14 +76,14 @@ def login_2():
 
 
 @app.route("/signup", methods=['GET'])
-def register_get():
+def signup_page():
     return render_template(
         'signup.html'
     )
 
 
 @app.route("/signup", methods=['POST'])
-def register_post():
+def signup():
     username_form = request.form.get('username')
     email_form = request.form.get('email')
     password_form = request.form.get('password')
@@ -125,7 +125,7 @@ def logout():
 
 @app.route("/add", methods=['GET'])
 @login_required
-def operations_adding_page():
+def add_operation_page():
     return render_template(
         "add.html"
     )
@@ -133,7 +133,7 @@ def operations_adding_page():
 
 @app.route("/add", methods=['POST'])
 @login_required
-def operations_adding():
+def add_operation():
     amount_form = request.form.get('amount')
     category_form = request.form.get('category')
     description_form = request.form.get('description')
@@ -172,7 +172,7 @@ def operations_adding():
 
 @app.route("/list", methods=['GET'])
 @login_required
-def operations_list():
+def operations_list_page():
     user_operations = operations.query.filter_by(user_id=current_user.id).all()
     return render_template(
         'index.html',
@@ -201,7 +201,7 @@ def delete_operation():
 
 @app.route("/edit", methods = ['POST', 'GET'])
 @login_required
-def edit_redirect():
+def edit_select_page():
     id_edit = request.form.get("selected_operation")
     operations_all = operations.query.filter_by(user_id=current_user.id).all()
     if request.method == 'GET':
@@ -215,7 +215,7 @@ def edit_redirect():
 
 @app.route("/edit/<string:id_edit>", methods = ['POST', 'GET'])
 @login_required
-def edit_operation_post(id_edit):
+def edit(id_edit):
     operation = operations.query.filter_by(id=id_edit).first()
     if request.method == 'GET':
         return render_template(
