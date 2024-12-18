@@ -223,10 +223,11 @@ def edit_operation_post(id_edit):
         operation=operation
     )
     else:
+        amount_form = request.form.get('amount')
+        category_form = request.form.get('category')
+        
         if (amount_form and category_form):
             operation = operations.query.filter_by(id=id_edit).first()
-            amount_form = request.form.get('amount')
-            category_form = request.form.get('category')
             description_form = request.form.get('description')
 
             operation.amount = amount_form
@@ -254,4 +255,4 @@ def edit_operation_post(id_edit):
                 "edit.html",
                 operation=operation,
                 errors=errors
-            )
+            ) 
